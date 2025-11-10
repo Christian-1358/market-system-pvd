@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<head>
+    <meta charset="UTF-8">
+    <title>PDV - Ponto de Venda</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300,400,700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/pvd.css">
+</head>
+
+</head>
+<body>
+<div class="pdv-container no-print">
+    <div class="pdv-left-panel no-print">
+
+        <div class="search-group">
+            <label for="quantidade-input">Quantidade:</label>
+            <input type="number" id="quantidade-input" value="1" min="1">
+            <label for="codigo_barras_input">Código Produto:</label>
+            <input type="text" id="codigo_barras_input" autofocus placeholder="Cód. Barras">
+            <button type="button" id="add-item-btn">Adicionar</button>
+        </div>
+
+        <h2 class="pedido-header">PEDIDO ABERTO EDIÇÃO</h2>
+
+        <div id="catalogo-rapido-container">
+            <div class="header-catalogo">
+                <h3 style="margin:0; color: var(--secondary-bg); font-family: 'Oswald', sans-serif;">Catálogo Rápido</h3>
+                <input type="text" id="filtro-produtos" placeholder="Buscar produto..." onkeyup="filtrarCatalogo()">
+            </div>
+            <div class="tabela-scroll">
+                <table id="tabela-catalogo">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th class="text-right">Preço</th>
+                            <th class="text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="4" style="text-align:center; color:#777;">Carregando produtos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="desconto-container">
+            <label for="desconto-input">Desconto %:</label>
+            <input type="number" id="desconto-input" value="0" min="0" max="100">
+            <button type="button" id="aplicar-desconto-btn">Aplicar</button>
+            <button type="button" id="fechamento-caixa-btn"><i class="fas fa-box-open"></i> Fechar Caixa</button>
+            <button type="button" id="btn-voltar" onclick="history.back()">Voltar&nbsp;</button>
+        </div>
+    </div>
+
+    <div class="pdv-right-panel" id="cart-right-panel">
+        <p id="empty-cart-msg">Nenhum item no carrinho.</p>
+
+        <div class="total-parcial-group">
+            <div class="total-item">
+                <span>Subtotal:</span>
+                <span class="total-value" id="subtotal-display">R$ 0,00</span>
+            </div>
+            <div class="total-item">
+                <span>Desconto:</span>
+                <span id="desconto-print">0%</span>
+            </div>
+            <div class="total-item">
+                <span>Total a Pagar:</span>
+                <span class="total-value" id="total-venda-display">R$ 0,00</span>
+            </div>
+        </div>
+
+        <div class="botoes-finalizar">
+            <button id="finalizar-btn"><i class="fas fa-check-circle"></i>Finalizar Compra</button>
+            <button id="cancelar-btn"><i class="fas fa-times-circle"></i>Cancelar Compra</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-pagamento-overlay" id="modal-pagamento-overlay">
+    <div class="modal-pagamento-content">
+        <h3 class="modal-pagamento-header">Pagamento / Checkout</h3>
+
+        <div class="total-a-pagar">
+            Total da Venda: <span id="modal-total-venda">R$ 0,00</span>
+        </div>
+
+        <div class="metodo-pagamento-group">
+            <label for="input-dinheiro">Valor em Dinheiro:</label>
+            <input type="number" id="input-dinheiro" value="0.00" min="0" step="0.01" oninput="calcularModalTroco()">
+        </div>
+
+        <div class="metodo-pagamento-group">
+            <label for="input-cartao">Valor no Cartão:</label>
+            <input type="number" id="input-cartao" value="0.00" min="0" step="0.01" oninput="calcularModalTroco()">
+        </div>
+
+        <div class="metodo-pagamento-group">
+            <label for="input-pix">Valor no PIX:</label>
+            <input type="number" id="input-pix" value="0.00" min="0" step="0.01" oninput="calcularModalTroco()">
+        </div>
+
+        <div class="resumo-pagamento">
+            <p>
+                <span>Total Pago:</span>
+                <span id="modal-total-pago">R$ 0,00</span>
+            </p>
+            <p>
+                <span>**Falta Pagar:**</span>
+                <span class="restante-valor" id="modal-restante-pagar">R$ 0,00</span>
+            </p>
+            <p>
+                <span>**Troco:**</span>
+                <span class="troco-valor" id="modal-troco-valor">R$ 0,00</span>
+            </p>
+            <div class="troco-moedas" id="modal-troco-detalhe"></div>
+        </div>
+
+        <div class="modal-footer-botoes">
+            <button id="btn-finalizar-pagamento" disabled><i class="fas fa-thumbs-up"></i> Concluir Venda</button>
+            <button id="btn-cancelar-modal"><i class="fas fa-arrow-left"></i> Voltar</button>
+        </div>
+    </div>
+</div>
+
+<div class="recibo-print" id="recibo-print">
+    <div class="recibo-header">
+        <h1>RECIBO DE COMPRA</h1>
+        <p id="recibo-data"></p>
+    </div>
+
+    <div id="recibo-itens"></div>
+    <div class="recibo-total-item">
+        <span>Subtotal:</span>
+        <span id="recibo-subtotal">R$ 0,00</span>
+    </div>
+
+    <div class="recibo-total-item">
+        <span>Desconto:</span>
+        <span id="recibo-desconto">0%</span>
+    </div>
+
+    <div class="recibo-total-item total-final">
+        <span>Total:</span>
+        <span id="recibo-total">R$ 0,00</span>
+    </div>
+
+    <div class="recibo-total-item" style="border-top: 1px solid #333; margin-top: 10px;">
+        <span>VALOR PAGO:</span>
+        <span id="recibo-pago">R$ 0,00</span>
+    </div>
+    
+    <div id="recibo-pagamentos-detalhe"></div>
+    <div class="recibo-total-item" style="border-top: none;">
+        <span>TROCO:</span>
+        <span id="recibo-troco">R$ 0,00</span>
+    </div>
+    <div id="recibo-troco-detalhe" class="recibo-troco-notas"></div>
+</div>
+
+<script src="/static/scripts/pdv.js"></script>
+</body>
+</html>

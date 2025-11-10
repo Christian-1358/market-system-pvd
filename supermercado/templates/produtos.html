@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestão de Produtos - Supermercado</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/produtos.css">
+
+</head>
+<body>
+    <div class="container">
+        
+        <div class="header-content">
+            <h1>Gestão de Produtos - Supermercado</h1>
+            <a href="/pdv" class="pdv-button">
+                Caixa Rápido (PDV) 🛒
+            </a>
+        </div>
+        {% if "Erro" in mensagem %}
+            <div class="message error">{{ mensagem }}</div>
+        {% elif mensagem %}
+            <div class="message success">{{ mensagem }}</div>
+        {% end %}
+
+        <h2>Cadastrar Novo Produto</h2>
+        <form method="POST" action="/produtos">
+            <label for="nome">Nome do Produto:</label>
+            <input type="text" id="nome" name="nome" required placeholder="Ex: Arroz Branco 5kg"><br>
+
+            <label for="preco">Preço (R$):</label>
+            <input type="number" id="preco" name="preco" step="0.01" min="0.01" required placeholder="Ex: 25.90"><br>
+
+            <label for="codigo_barras">Código de Barras:</label>
+            <input type="text" id="codigo_barras" name="codigo_barras" required placeholder="Ex: 7891234567891"><br>
+
+            <label for="estoque">Estoque Inicial:</label>
+            <input type="number" id="estoque" name="estoque" min="0" required value="0" placeholder="Ex: 50"><br>
+
+            <button type="submit">Cadastrar Produto</button>
+        </form>
+
+        <hr>
+        
+        <h2>Recebimento de Estoque</h2>
+        <p>Use este formulário para adicionar novas unidades de produtos existentes ao estoque.</p>
+        
+        <form method="POST" action="/recebimento" class="recebimento-form">
+            
+            <label for="codigo_barras_add" style="display: block;">Código de Barras:</label>
+            <input type="text" id="codigo_barras_add" name="codigo_barras" required placeholder="Cód. do produto"><br>
+            
+            <label for="quantidade_add" style="display: block;">Quantidade a Adicionar:</label>
+            <input type="number" id="quantidade_add" name="quantidade" min="1" required value="1" placeholder="Ex: 10"><br>
+            
+            <button type="submit">Adicionar ao Estoque</button>
+        </form>
+
+
+        <hr>
+        
+        <h2>Retirada de Estoque (Venda Rápida / Baixa)</h2>
+        <p>Use para remover uma unidade do estoque (simulando uma venda ou baixa simples).</p>
+        <form method="POST" action="/retirada">
+            <label for="codigo_barras_retirada">Código de Barras:</label>
+            <input type="text" id="codigo_barras_retirada" name="codigo_barras" required placeholder="Código do produto a ser retirado"><br> 
+            <button type="submit">Retirar 1 Unidade</button>
+        </form>
+        
+        <hr>
+
+        <h2>Produtos Cadastrados ({{ len(produtos) }})</h2>
+        {% if not produtos %}
+            <p>Nenhum produto cadastrado ainda. Use o formulário acima para adicionar um novo produto.</p>
+        {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Cód. Barras</th>
+                    <th>Estoque</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in produtos %}
+                    <tr>
+                        <td>{{ p['id'] }}</td>
+                        <td>{{ p['nome'] }}</td>
+                        <td>R$ {{ "%.2f" % p['preco'] }}</td>
+                        <td>{{ p['codigo_barras'] }}</td>
+                        <td>{{ p['estoque'] }}</td>
+                    </tr>
+                {% end %}
+            </tbody>
+        </table>
+        {% end %}
+    </div>
+</body>
+</html>
