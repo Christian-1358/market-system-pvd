@@ -14,6 +14,7 @@ from supermercado.handlers.mainhandler import (
     ApiProdutoSearchHandler,
     RemoverItemHandler,     
     ProdutosApiHandler,
+    VerificarSaldoHandler,
 )
 
 
@@ -31,6 +32,7 @@ class Application(tornado.web.Application):
             (r"/pdv/cancelar", CancelarPedidoHandler),  
             (r"/pdv/remover", RemoverItemHandler),  
             (r"/pdv/produtos", ProdutosApiHandler),  
+            (r"/verificar", VerificarSaldoHandler),
 
  
         ]

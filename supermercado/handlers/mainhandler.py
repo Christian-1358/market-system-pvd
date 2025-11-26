@@ -1,4 +1,3 @@
-
 import tornado.web #separ
 import json
 import uuid
@@ -302,3 +301,5 @@ class ApiProdutoSearchHandler(tornado.web.RequestHandler):
             self.set_status(404)
         self.write(json.dumps({"success": False, "message": f"Produto com código {codigo} não encontrado."}))
         
+
+
