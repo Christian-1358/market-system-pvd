@@ -17,8 +17,6 @@ from supermercado.handlers.mainhandler import (
     VerificarSaldoHandler,
 )
 
-
-
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
@@ -33,21 +31,15 @@ class Application(tornado.web.Application):
             (r"/pdv/remover", RemoverItemHandler),  
             (r"/pdv/produtos", ProdutosApiHandler),  
             (r"/verificar", VerificarSaldoHandler),
-
- 
         ]
         
         settings = {
-    "template_path": os.path.join(os.path.dirname(__file__), "supermercado/templates"),
-    "static_path": os.path.join(os.path.dirname(__file__), "supermercado/static"),
-
-    "debug": True,
-    "cookie_secret": "SUA_STRING_SECRETA_ALEATORIA_LONGA_AQUI",
-}
-
+            "template_path": os.path.join(os.path.dirname(__file__), "supermercado/templates"),
+            "static_path": os.path.join(os.path.dirname(__file__), "supermercado/static"),
+            "debug": True,
+        }
         
         super().__init__(handlers, **settings)
-
 
 def main():
     setup_db() 
